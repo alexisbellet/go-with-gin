@@ -15,7 +15,6 @@ import (
 func connectToDb() *sql.DB {
     // Open a connection to the database
 	connStr := fmt.Sprintf("host=%v dbname=%v user=%v password=%v sslmode=%v", os.Getenv("POSTGRES_HOST"), os.Getenv("POSTGRES_DB"), os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"), os.Getenv("POSTGRES_SSLMODE"))
-    log.Print(connStr)
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal(fmt.Sprintf("Could not connect to the database: %v", err))
@@ -58,7 +57,7 @@ func GetAlbums(c *gin.Context) {
 func GetAlbumByID(c *gin.Context) {
     db := connectToDb()
 
-    // An album struct to hold data from returned rows.
+    // An album struct to hold data from returned rows
     var alb models.Album
     id := c.Param("id")
 
@@ -75,14 +74,23 @@ func GetAlbumByID(c *gin.Context) {
     c.IndentedJSON(http.StatusFound, alb)
 }
 
-// func PostAlbums(c *gin.Context) {
-//     var newAlbum models.Album
+func PostAlbums(c *gin.Context) {
+    db := connectToDb()
 
-//     if err := c.BindJSON(&newAlbum); err != nil {
-//         return
-//     }
-    
-//     // Add the new album to the slice.
-//     albums = append(albums, newAlbum)
-//     c.IndentedJSON(http.StatusCreated, newAlbum)
-// }
+    // An album struct to hold data from post request
+    var newAlbum models.Album
+
+    // Attempt to bind the request data to our struct
+    if err := c.BindJSON(&newAlbum); err != nil {
+        c.IndentedJSON(http.StatusBadRequest, err)
+        return
+    }
+
+    _, err := db.Exec("INSERT INTO albums (title, artist, price) VALUES ($1, $2, $3)", newAlbum.Title, newAlbum.Artist, newAlbum.Price)
+    if err != nil {
+        c.IndentedJSON(http.StatusInternalServerError, err)
+        return
+    }
+
+    c.IndentedJSON(http.StatusCreated, newAlbum)
+}
