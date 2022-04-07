@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"go-with-gin/models"
@@ -14,13 +14,12 @@ var albums = []models.Album{
     {ID: "3", Title: "Sarah Vaughan and Clifford Brown", Artist: "Sarah Vaughan", Price: 39.99},
 }
 
-// getAlbums responds with the list of all albums as JSON.
-func getAlbums(c *gin.Context) {
+func GetAlbums(c *gin.Context) {
     // albums slice to seed record album data.
     c.IndentedJSON(http.StatusOK, albums)
 }
 
-func getAlbumByID(c *gin.Context) {
+func GetAlbumByID(c *gin.Context) {
     id := c.Param("id")
     for _, a := range albums {
         if a.ID == id {
@@ -31,7 +30,7 @@ func getAlbumByID(c *gin.Context) {
     c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
 }
 
-func postAlbums(c *gin.Context) {
+func PostAlbums(c *gin.Context) {
     var newAlbum models.Album
 
     if err := c.BindJSON(&newAlbum); err != nil {

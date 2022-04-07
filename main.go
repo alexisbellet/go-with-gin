@@ -1,12 +1,16 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	. "go-with-gin/handlers"
+
+	"github.com/gin-gonic/gin"
+)
 
 func main() {
 	router := gin.Default()
-    router.GET("/albums", getAlbums)
-	router.GET("/albums/:id", getAlbumByID)
-    router.POST("/albums", postAlbums)
+    router.GET("/albums", GetAlbums)
+	router.GET("/albums/:id", GetAlbumByID)
+    router.POST("/albums", PostAlbums)
 
     router.Run("localhost:8080")
 }
